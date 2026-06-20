@@ -39,7 +39,7 @@ pipeline {
       steps {
         echo '====== Pushing to Docker Hub ======'
         script {
-          withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+          withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
             sh '''
               echo "Logging into Docker Hub..."
               echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
