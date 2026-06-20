@@ -9,7 +9,7 @@ pipeline {
     DOCKER_IMAGE = "patient-portal:${BUILD_NUMBER}"
     DOCKER_REGISTRY = 'docker.io'
     DOCKER_REPO = 'vikash3117/patient-portal'
-    REPO_URL = 'https://github.com/vikashsum/AppointmentService.git'
+    REPO_URL = 'https://github.com/vikashsum/patient-portal.git'
   }
 
   stages {
