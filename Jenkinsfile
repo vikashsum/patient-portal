@@ -23,13 +23,15 @@ pipeline {
     stage('Build') {
       steps {
         echo '====== Installing and building frontend ======'
-        sh 'npm ci'
-        sh 'npm run lint || true'
-        sh 'npm run build'
+        // Run npm tasks inside an official Node container (requires Docker on agent)
+        sh '''
+          echo "Running frontend build inside node:18-alpine container"
+          docker run --rm -v "$PWD":/app -w /app node:18-alpine sh -c "npm install && npm run lint || true && npm run build"
 
-        echo '====== Building Docker image (nginx) ======'
-        sh 'docker build -t ${DOCKER_IMAGE} .'
-        sh 'docker images | grep patient-portal || true'
+          echo '====== Building Docker image (nginx) ======'
+          docker build -t ${DOCKER_IMAGE} .
+          docker images | grep patient-portal || true
+        '''
       }
     }
 
