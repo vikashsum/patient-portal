@@ -1,0 +1,6 @@
+aws_region = "us-east-1"
+appointment_image = "vikash3117/appointmentservice"
+patient_image = "vikash3117/patientservic"
+doctor_image = "vikash3117/doctorservice"
+portal_image = "vikash3117/patient-portal"
+image_tag = "latest"
