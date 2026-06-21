@@ -9,7 +9,7 @@ pipeline {
     AWS_REGION      = 'us-east-1'
     TERRAFORM_DIR   = 'terraform-ecs'
     APPOINTMENT_IMAGE = 'vikash3117/appointmentservice'
-    PATIENT_IMAGE     = 'vikash3117/patientservic'
+    PATIENT_IMAGE     = 'vikash3117/patientservice'
     DOCTOR_IMAGE      = 'vikash3117/doctorservice'
     PORTAL_IMAGE      = 'vikash3117/patient-portal'
     DOCKER_IMAGE      = "patient-portal:${BUILD_NUMBER}"

@@ -20,13 +20,13 @@ resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   tags = {
-    Name = "hospital-microservices-vpc"
+    Name = "${var.deployment_prefix}-vpc"
   }
 }
 
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
-  tags = { Name = "hospital-microservices-igw" }
+  tags = { Name = "${var.deployment_prefix}-igw" }
 }
 
 resource "aws_subnet" "public" {
@@ -36,7 +36,7 @@ resource "aws_subnet" "public" {
   availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = true
   tags = {
-    Name = "hospital-microservices-subnet-${count.index}"
+    Name = "${var.deployment_prefix}-subnet-${count.index}"
   }
 }
 
@@ -46,7 +46,7 @@ resource "aws_route_table" "public" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
-  tags = { Name = "hospital-microservices-rt" }
+  tags = { Name = "${var.deployment_prefix}-rt" }
 }
 
 resource "aws_route_table_association" "public" {
@@ -56,7 +56,7 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_security_group" "ecs" {
-  name        = "hospital-microservices-ecs-sg"
+  name        = "${var.deployment_prefix}-ecs-sg"
   description = "Allow HTTP access to ECS tasks"
   vpc_id      = aws_vpc.main.id
 
@@ -80,11 +80,11 @@ resource "aws_security_group" "ecs" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = { Name = "hospital-microservices-ecs-sg" }
+  tags = { Name = "${var.deployment_prefix}-ecs-sg" }
 }
 
 resource "aws_service_discovery_private_dns_namespace" "main" {
-  name = "microservices.local"
+  name = "${var.deployment_prefix}.local"
   vpc  = aws_vpc.main.id
   description = "Private namespace for ECS service discovery"
 }
@@ -126,11 +126,11 @@ resource "aws_service_discovery_service" "doctorservice" {
 }
 
 resource "aws_ecs_cluster" "main" {
-  name = "hospital-microservices-cluster"
+  name = "${var.deployment_prefix}-cluster"
 }
 
 resource "aws_iam_role" "ecs_task_execution" {
-  name = "hospital-microservices-ecs-task-execution-role"
+  name = "${var.deployment_prefix}-ecs-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role_policy.json
 }
 
@@ -167,8 +167,8 @@ resource "aws_ecs_task_definition" "appointmentservice" {
         { name = "PORT", value = "3002" },
         { name = "SERVICE_NAME", value = "appointment-service" },
         { name = "DB_DIALECT", value = "mysql" },
-        { name = "PATIENT_SERVICE_URL", value = "http://patientservice.microservices.local:3001" },
-        { name = "DOCTOR_SERVICE_URL", value = "http://doctorservice.microservices.local:3003" }
+        { name = "PATIENT_SERVICE_URL", value = "http://patientservice.${var.deployment_prefix}.local:3001" },
+        { name = "DOCTOR_SERVICE_URL", value = "http://doctorservice.${var.deployment_prefix}.local:3003" }
       ]
       logConfiguration = {
         logDriver = "awslogs"
@@ -200,8 +200,8 @@ resource "aws_ecs_task_definition" "patientservice" {
         { name = "PORT", value = "3001" },
         { name = "SERVICE_NAME", value = "patient-service" },
         { name = "DB_DIALECT", value = "postgres" },
-        { name = "APPOINTMENT_SERVICE_URL", value = "http://appointmentservice.microservices.local:3002" },
-        { name = "DOCTOR_SERVICE_URL", value = "http://doctorservice.microservices.local:3003" }
+        { name = "APPOINTMENT_SERVICE_URL", value = "http://appointmentservice.${var.deployment_prefix}.local:3002" },
+        { name = "DOCTOR_SERVICE_URL", value = "http://doctorservice.${var.deployment_prefix}.local:3003" }
       ]
       logConfiguration = {
         logDriver = "awslogs"
@@ -367,7 +367,7 @@ resource "aws_ecs_service" "patientportal" {
 }
 
 resource "aws_lb" "app" {
-  name               = "hospital-microservices-lb"
+  name               = "${var.deployment_prefix}-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs.id]

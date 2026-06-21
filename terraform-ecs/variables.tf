@@ -3,6 +3,11 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
+variable "deployment_prefix" {
+  type    = string
+  default = "patient-portal"
+}
+
 variable "appointment_image" {
   type    = string
   default = "vikash3117/appointmentservice"
@@ -10,7 +15,7 @@ variable "appointment_image" {
 
 variable "patient_image" {
   type    = string
-  default = "vikash3117/patientservic"
+  default = "vikash3117/patientservice"
 }
 
 variable "doctor_image" {
